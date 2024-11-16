@@ -1,0 +1,50 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    background-color: #000000;
+    color: #ffffff;
+    height: 100vh; /* alterado de 100dvh para 100vh */
+    width: 100vw; /* alterado de 100dvw para 100vw */
+}
+
+main {
+    display: flex;
+    align-items: end;
+    justify-content: center;
+    flex-direction: column;
+    flex: 1;
+    width: clamp(300px, 80%, 1000px);
+    margin: 0 auto;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-top: 10px;
+}
+
+section {
+    display: flex;
+    width: 100%;
+    flex: 1;
+    border: 1px solid #ffffff;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+div {
+    height: 120px;
+    background-color: #ffffff2a;
+    width: 100%;
+}
