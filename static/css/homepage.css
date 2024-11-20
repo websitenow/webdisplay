@@ -9,11 +9,27 @@
 
 body {
     display: flex;
+    align-items: center;
+    justify-content: center;
     flex-direction: column;
     background-color: #000000;
     color: #ffffff;
     height: 100vh; /* alterado de 100dvh para 100vh */
     width: 100vw; /* alterado de 100dvw para 100vw */
+}
+
+header {
+    display: flex;
+    width: 100%;
+    padding: 0 2em;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+}
+
+header nav {
+    display: flex;
+    gap: 10px;
 }
 
 main {
@@ -26,25 +42,12 @@ main {
     margin: 0 auto;
 }
 
-header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    margin-top: 10px;
-}
 
-section {
+video {
     display: flex;
     width: 100%;
     flex: 1;
     border: 1px solid #ffffff;
     border-radius: 10px;
     margin-bottom: 10px;
-}
-
-div {
-    height: 120px;
-    background-color: #ffffff2a;
-    width: 100%;
 }
