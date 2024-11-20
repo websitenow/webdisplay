@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div>
+        <h3>Remote Receiver</h3>
+        <br>
+        <video id="receiver" autoplay controls></video>
+    </div>
+    <script src="{{ url_for('static', filename='js/lib/socket.io.min.js') }}"></script>
+    <script>
+        const socket = io(window.location.origin);
+        let pcClose;
+
+        socket.on('disconnect', () => {
+            console.log('Desconectando e limpando recursos...');
+
+            // Fechar a RTCPeerConnection
+            if (pcClose) {
+                pcClose.close();
+                console.log('Conexão RTCPeerConnection fechada.');
+            }
+
+            // Fechar o WebSocket
+            socket.close();
+            console.log('Conexão WebSocket fechada.');
+        });
+
+
+        const receiverVideo = document.querySelector('video#receiver');
+
+        // Recebe a oferta de A e cria uma resposta
+        socket.on('offer', async (offer) => {
+            const pc = new RTCPeerConnection();
+            pcClose = pc
+            
+            // Quando o vídeo de A for recebido, exibe no vídeo de B
+            pc.ontrack = (event) => {
+                const stream = event.streams[0];
+                receiverVideo.srcObject = stream; // B exibe o vídeo de A
+            };
+
+            // Quando um candidato ICE for recebido, adiciona-o ao peer connection
+            socket.on('candidate', async (candidate) => {
+                try {
+                    await pc.addIceCandidate(candidate);
+                } catch (error) {
+                    console.error("Erro ao adicionar candidato ICE:", error);
+                }
+            });
+
+            // Configura a descrição remota com a oferta de A
+            await pc.setRemoteDescription(new RTCSessionDescription(offer));
+
+            // Cria a resposta (answer) e envia para A
+            const answer = await pc.createAnswer();
+            await pc.setLocalDescription(answer);
+
+            // Quando um candidato ICE é encontrado
+            pc.onicecandidate = (event) => {
+                if (event.candidate) {
+                    socket.emit('candidate', event.candidate); // Envia o candidato ICE
+                }
+            };
+
+            // Recebe os candidatos ICE de A (para B)
+            socket.on('candidate', async (candidate) => {
+                try {
+                    await pc.addIceCandidate(candidate); // Adiciona o candidato ICE
+                } catch (error) {
+                    console.error("Erro ao adicionar candidato ICE:", error);
+                }
+            });
+
+
+            // Envia a resposta para A
+            socket.emit("answer", { sdp: answer.sdp, type: answer.type });
+        });
+
+    </script>
+</body>
+
+</html>

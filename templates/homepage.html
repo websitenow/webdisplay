@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
@@ -20,63 +20,145 @@
     <main>
         <video id="screenVideo" width="600" autoplay></video>
     </main>
+    <script src="{{ url_for('static', filename='js/lib/socket.io.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/socket.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/webrtc.js') }}"></script>
+</body>
 
-    <script>
-        const startCaptureButton = document.getElementById('startCapture');
-        const startMiniatureButton = document.getElementById('startMiniature');
-        const stopCapture = document.getElementById('stopCapture');
-        const videoElement = document.getElementById('screenVideo');
-        let stream;
+</html> -->
 
-        async function startCapture() {
-            try {
-                stream = await navigator.mediaDevices.getDisplayMedia({
-                    video: {
-                        cursor: 'always'
-                    },
-                    audio: true
-                });
-                videoElement.srcObject = stream;
-            } catch (err) {
-                console.error('Erro ao capturar a tela:', err);
-            }
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Screenshare a video file</title>
+    <style>
+        div.output {
+            display: flex;
         }
 
-        stopCapture.addEventListener('click', () => {
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-                videoElement.srcObject = null;
-                console.log('Transmissão desligada');
-                stream = null
-            }
-        })
+        video {
+            width: 640px;
+            height: 360px;
+            background-color: black;
+            margin: 5px;
+        }
 
-        startCaptureButton.addEventListener('click', () => {
-            startCapture();
+        div#notes {
+            max-width: 1200px;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <button id="capture">Capture</button>
+    </div>
+    <div class="output">
+        <div>
+            <h3>Screen Share Preview</h3>
+            <br>
+            <video id="screeSharePreview" autoplay></video>
+            <br>
+        </div>
+    </div>
+
+    <br>
+    <span></span>
+    <script src="{{ url_for('static', filename='js/lib/socket.io.min.js') }}"></script>
+    <script>
+        const socket = io(window.location.origin);
+
+
+        // Configurações e elementos HTML
+        const screenSharePreview = document.getElementById('screeSharePreview');
+        const captureBtn = document.querySelector('button#capture');
+        const span = document.querySelector('span');
+        let pc;
+
+
+        socket.on('disconnect', () => {
+            console.log('Desconectando e limpando recursos...');
+
+            // Fechar a RTCPeerConnection
+            if (pc) {
+                pc.close();
+                console.log('Conexão RTCPeerConnection fechada.');
+            }
+
+            // Fechar o WebSocket
+            socket.close();
+            console.log('Conexão WebSocket fechada.');
         });
 
-        startMiniatureButton.addEventListener('click', async () => {
-            try {
-                // Verifica se o navegador suporta Picture-in-Picture 
-                if (!document.pictureInPictureEnabled) {
-                    console.log('Picture-in-Picture não é suportado por este navegador.'); return;
-                }
-                // Sai do Picture-in-Picture, se já estiver ativado 
 
-                if (document.pictureInPictureElement) {
-                    await document.exitPictureInPicture();
-                } else {
-                    // Entra no modo Picture-in-Picture 
-                    await videoElement.requestPictureInPicture();
+        // Função para enviar o vídeo via WebRTC
+        async function sendVideo(stream) {
+            pc = new RTCPeerConnection();
+
+            // Adiciona o stream ao peer connection
+            stream.getTracks().forEach(track => pc.addTrack(track, stream));
+
+            // Quando um candidato ICE é encontrado
+            pc.onicecandidate = (event) => {
+                if (event.candidate) {
+                    socket.emit('candidate', event.candidate); // Envia o candidato ICE
                 }
+            };
+
+            // //Recebe os candidatos ICE de A (para B)
+            // socket.on('candidate', async (candidate) => {
+            //     console.log("CANDIDATE: ", candidate);
+
+            //     try {
+            //         await pc.addIceCandidate(candidate); // Adiciona o candidato ICE
+            //     } catch (error) {
+            //         console.error("Erro ao adicionar candidato ICE:", error);
+            //     }
+            // });
+
+            // Cria a oferta
+            const offer = await pc.createOffer();
+            await pc.setLocalDescription(offer);
+
+            // Envia a oferta para B
+            socket.emit("offer", { sdp: offer.sdp, type: offer.type });
+        }
+
+        // Captura a tela e envia
+        captureBtn.onclick = async () => {
+            try {
+                // Solicita a captura da tela
+                const stream = await navigator.mediaDevices.getDisplayMedia({
+                    //video: { mediaSource: "screen" },
+                    audio: true,
+                });
+
+                // Exibe a tela capturada no local
+                screenSharePreview.srcObject = stream;
+
+                // Envia o stream para B via WebRTC
+                await sendVideo(stream);
             } catch (error) {
-                console.error('Erro ao tentar ativar/desativar Picture-in-Picture:', error);
+                console.log("Erro ao capturar a tela:", error);
             }
+        };
+
+        // Recebe a resposta (answer) de B
+        socket.on('answer', async (answer) => {
+            // Configura a descrição remota de A com a resposta de B
+            await pc.setRemoteDescription(new RTCSessionDescription(answer));
+
+            // Continua com a troca de ICE
+            pc.onicecandidate = (event) => {
+                if (event.candidate) {
+                    socket.emit('candidate', event.candidate);
+                }
+            };
         });
     </script>
-
-
-    <!-- <script src="{{ url_for('static', filename='js/getMediaDisplay.js') }}"></script> -->
 </body>
 
 </html>
