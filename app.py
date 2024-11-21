@@ -88,7 +88,7 @@ app.config['SECRET_KEY'] = 'secret!'
 CORS(app)
 socketIO = SocketIO(
     app, 
-    async_mode = None, #'eventlet',
+    async_mode = 'eventlet',
     cors_allowed_origins = '*'
 ) 
 
@@ -114,4 +114,4 @@ def handle_candidate(data):
 
 
 if __name__ == '__main__':
-    socketIO.run(app)
+    socketIO.run(app, host="0.0.0.0")
