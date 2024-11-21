@@ -108,7 +108,7 @@ app = SocketIOFlask(__name__)
 
 @app.app.route('/')
 def home():
-    return app.jsonapp#render_template('homepage.html')
+    return render_template('homepage.html')
 
 @app.app.route('/receiver')
 def receiver():
