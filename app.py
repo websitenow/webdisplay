@@ -88,7 +88,7 @@ app.config['SECRET_KEY'] = 'secret!'
 CORS(app)
 socketIO = SocketIO(
     app, 
-    async_mode = None#'eventlet', 
+    async_mode = None, #'eventlet',
     cors_allowed_origins = '*'
 ) 
 
