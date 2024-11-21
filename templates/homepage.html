@@ -1,34 +1,4 @@
 <!-- <!DOCTYPE html>
-<html lang="pt-br">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/homepage.css') }}">
-    <title>Homepage</title>
-</head>
-
-<body>
-    <header>
-        <h1>WebRTC</h1>
-        <nav>
-            <button id="startCapture">Iniciar Captura</button>
-            <button id="stopCapture">Parar Captura</button>
-            <button id="startMiniature">Miniatura</button>
-        </nav>
-    </header>
-    <main>
-        <video id="screenVideo" width="600" autoplay></video>
-    </main>
-    <script src="{{ url_for('static', filename='js/lib/socket.io.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/socket.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/webrtc.js') }}"></script>
-</body>
-
-</html> -->
-
-
-<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -166,3 +136,105 @@
 </body>
 
 </html>
+ -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Screenshare a video file</title>
+    <style>
+        div.output {
+            display: flex;
+        }
+        video {
+            width: 640px;
+            height: 360px;
+            background-color: black;
+            margin: 5px;
+        }
+        div#notes {
+            max-width: 1200px;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <button id="capture">Capture</button>
+    </div>
+    <div class="output">
+        <div>
+            <h3>Screen Share Preview</h3>
+            <br>
+            <video id="screenSharePreview" autoplay muted></video>
+            <br>
+        </div>
+    </div>
+    <br>
+    <span></span>
+    <script src="{{ url_for('static', filename='js/lib/socket.io.min.js') }}"></script>
+    <script>
+        const socket = io(window.location.origin);
+        const screenSharePreview = document.getElementById('screenSharePreview');
+        const captureBtn = document.querySelector('button#capture');
+        let pc;
+
+        socket.on('disconnect', () => {
+            if (pc) {
+                pc.close();
+            }
+            socket.close();
+        });
+
+        async function sendVideo(stream) {
+            pc = new RTCPeerConnection({
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' }
+                ]
+            });
+
+            stream.getTracks().forEach(track => pc.addTrack(track, stream));
+
+            pc.onicecandidate = (event) => {
+                if (event.candidate) {
+                    socket.emit('candidate', event.candidate);
+                }
+            };
+
+            const offer = await pc.createOffer();
+            await pc.setLocalDescription(offer);
+            socket.emit("offer", { sdp: offer.sdp, type: offer.type });
+
+            socket.on('candidate', async (candidate) => {
+                try {
+                    await pc.addIceCandidate(candidate);
+                } catch (error) {
+                    console.error("Erro ao adicionar candidato ICE:", error);
+                }
+            });
+
+            socket.on('answer', async (answer) => {
+                await pc.setRemoteDescription(new RTCSessionDescription(answer));
+            });
+        }
+
+        captureBtn.onclick = async () => {
+            try {
+                const stream = await navigator.mediaDevices.getDisplayMedia({
+                    audio: true,
+                });
+                screenSharePreview.srcObject = stream;
+                await sendVideo(stream);
+            } catch (error) {
+                console.log("Erro ao capturar a tela:", error);
+            }
+        };
+    </script>
+</body>
+
+</html>
+
+ 
