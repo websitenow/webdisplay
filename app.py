@@ -84,7 +84,7 @@ from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 
 app_server = Flask(__name__)
-app = SocketIO(app, async_mode='eventlet')  # Usar eventlet
+app = SocketIO(app_server, async_mode='eventlet')  # Usar eventlet
 
 @app_server.route('/')
 def home():
