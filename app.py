@@ -84,7 +84,7 @@ from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 
 class SocketIO_(SocketIO):
-    def __call__(*args, **kwargs):
+    def __call__(self, *args, **kwargs):
         print(*args, **kwargs)
 
 app_server = Flask(__name__)
