@@ -80,16 +80,19 @@ if __name__ == '__main__':
 """
 
 
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 from flask_socketio import SocketIO, emit
+
 
 class SocketIOFlask:
     def __init__(self, name):
         self.app = Flask(name)
         self.socketIO = SocketIO(self.app, async_mode='eventlet')
+        self.jsonapp = ""
         
     def __call__(self, environ, start_response): 
         with self.app.app_context():
+            self.jsonapp = jsonify(environ)
             return self.app.__call__(environ, start_response)
         
     def run(self, *a, **kw):
@@ -100,7 +103,7 @@ app = SocketIOFlask(__name__)
 
 @app.app.route('/')
 def home():
-    return render_template('homepage.html')
+    return app.jsonapp#render_template('homepage.html')
 
 @app.app.route('/receiver')
 def receiver():
