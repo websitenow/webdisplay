@@ -129,8 +129,6 @@ def handle_answer(data):
 def handle_candidate(data):
     emit('candidate', data, broadcast=True)
 
-app.run('0.0.0.0')
-
 if __name__ == '__main__':
     import eventlet
     import eventlet.wsgi
