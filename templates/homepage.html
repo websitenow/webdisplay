@@ -182,6 +182,14 @@
         const captureBtn = document.querySelector('button#capture');
         let pc;
 
+        socket.on('connect', () => {
+            console.log(">>> I'm connected!")
+        });
+
+        socket.on('other_connected', (id) => {
+            console.log(`# ${id} is connected!`)
+        });
+
         socket.on('disconnect', () => {
             if (pc) {
                 pc.close();
