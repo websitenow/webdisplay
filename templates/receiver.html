@@ -10,8 +10,8 @@
 <body>
     <div>
         <h3>Remote Receiver</h3>
-        <br>
-        <video id="receiver" autoplay controls></video>
+        <button onclick="fullscreen()">FULLSCREEN</button>
+        <video id="receiver" autoplay controls style="max-width: 100dvw;"></video>
     </div>
     <script src="{{ url_for('static', filename='js/lib/socket.io.min.js') }}"></script>
     <script>
@@ -82,7 +82,19 @@
             // Envia a resposta para A
             socket.emit("answer", { sdp: answer.sdp, type: answer.type });
         });
-
+        
+        function fullscreen() {
+            if (receiverVideo.requestFullscreen) {
+                receiverVideo.requestFullscreen();
+            } else if (receiverVideo.mozRequestFullScreen) { // Firefox
+                receiverVideo.mozRequestFullScreen();
+            } else if (receiverVideo.webkitRequestFullscreen) { // Chrome, Safari e Opera
+                receiverVideo.webkitRequestFullscreen();
+            } else if (receiverVideo.msRequestFullscreen) { // IE/Edge
+                receiverVideo.msRequestFullscreen();
+            }
+        }
+        
     </script>
 </body>
 
