@@ -84,8 +84,14 @@ from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 
 class SocketIO_(SocketIO):
-    def __call__(self, *args, **kwargs):
-        print(*args, **kwargs)
+    def __call__(
+        self, environ: WSGIEnvironment, start_response: StartResponse
+    ) -> cabc.Iterable[bytes]:
+        """The WSGI server calls the Flask application object as the
+        WSGI application. This calls :meth:`wsgi_app`, which can be
+        wrapped to apply middleware.
+        """
+        print(environ, start_response)
 
 app_server = Flask(__name__)
 app = SocketIO_(app_server, async_mode='eventlet')  # Usar eventlet
