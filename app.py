@@ -112,6 +112,10 @@ def handle_answer(data):
 def handle_candidate(data):
     emit('candidate', data, broadcast=True)
 
+@socketIO.on('join_connected') 
+def handle_join_connected(socket_id): 
+    emit('other_connected', socket_id, broadcast=True)
+
 
 if __name__ == '__main__':
     socketIO.run(app, host="0.0.0.0")
