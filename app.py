@@ -87,7 +87,7 @@ from flask_socketio import SocketIO, emit
 class SocketIOFlask: 
     def __init__(self, name): 
         self.app = Flask(name) 
-        self.socketIO = SocketIO(self.app, async_mode='eventlet') 
+        self.socketIO = SocketIO(self.app, async_mode='eventlet', cors_allowed_origins='*') 
         # self.jsonapp = "" 
         # self.server_thread = Thread(target=self.run, args=('0.0.0.0',)) 
         # self.server_thread_started = False 
