@@ -83,8 +83,12 @@ if __name__ == '__main__':
 from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 
+class SocketIO_(SocketIO):
+    def __call__(*args, **kwargs):
+        print(*args, **kwargs)
+
 app_server = Flask(__name__)
-app = SocketIO(app_server, async_mode='eventlet')  # Usar eventlet
+app = SocketIO_(app_server, async_mode='eventlet')  # Usar eventlet
 
 @app_server.route('/')
 def home():
