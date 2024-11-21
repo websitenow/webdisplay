@@ -184,6 +184,7 @@
 
         socket.on('connect', () => {
             console.log(">>> I'm connected!")
+            socket.emit('join_connected', socket.id)
         });
 
         socket.on('other_connected', (id) => {
