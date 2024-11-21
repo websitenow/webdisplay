@@ -81,12 +81,14 @@ if __name__ == '__main__':
 
 
 from flask import Flask, render_template, jsonify
+from flask_cors import CORS
 from flask_socketio import SocketIO, emit
 # from threading import Thread
 
 class SocketIOFlask: 
     def __init__(self, name): 
         self.app = Flask(name) 
+        CORS(self.app)
         self.socketIO = SocketIO(self.app, async_mode='eventlet', cors_allowed_origins='*') 
         # self.jsonapp = "" 
         # self.server_thread = Thread(target=self.run, args=('0.0.0.0',)) 
@@ -101,9 +103,9 @@ class SocketIOFlask:
         print(call_response)
         return call_response
     
-    # def run(self, host, *a, **kw): 
-    #     print("RUN SOCKET") 
-    #     self.socketIO.run(self.app, host=host, *a, **kw)
+    def run(self, host, *a, **kw): 
+        print("RUN SOCKET") 
+        self.socketIO.run(self.app, host=host, *a, **kw)
     
 app = SocketIOFlask(__name__)
 
@@ -126,6 +128,8 @@ def handle_answer(data):
 @app.socketIO.on('candidate')
 def handle_candidate(data):
     emit('candidate', data, broadcast=True)
+
+app.run()
 
 if __name__ == '__main__':
     import eventlet
