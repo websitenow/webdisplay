@@ -96,7 +96,11 @@
 
         // Função para enviar o vídeo via WebRTC
         async function sendVideo(stream) {
-            pc = new RTCPeerConnection();
+            pc = new RTCPeerConnection({ 
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' }
+                ]
+            });
 
             // Adiciona o stream ao peer connection
             stream.getTracks().forEach(track => pc.addTrack(track, stream));
