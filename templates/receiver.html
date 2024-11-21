@@ -5,13 +5,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        
+        video {
+             max-width: 100dvw;
+        }
+    </style>
 </head>
 
 <body>
     <div>
         <h3>Remote Receiver</h3>
         <button onclick="fullscreen()">FULLSCREEN</button>
-        <video id="receiver" autoplay controls style="max-width: 100dvw;"></video>
+        <br>
+        <video id="receiver" autoplay controls></video>
     </div>
     <script src="{{ url_for('static', filename='js/lib/socket.io.min.js') }}"></script>
     <script>
