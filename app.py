@@ -91,9 +91,8 @@ class SocketIOFlask:
         self.jsonapp = ""
         
     def __call__(self, environ, start_response): 
-        with self.app.app_context():
-            self.jsonapp = str(environ)
-            return self.app.__call__(environ, start_response)
+        self.jsonapp = str(environ)
+        return self.app.__call__(environ, start_response)
         
     def run(self, *a, **kw):
         print("RUN SOCKET")
