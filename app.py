@@ -37,7 +37,7 @@
 #     )
 #     http_server.serve_forever()
 
-
+"""
 from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 
@@ -61,6 +61,48 @@ def handle_answer(data):
     emit('answer', data, broadcast=True)
 
 @socketio.on('candidate')
+def handle_candidate(data):
+    emit('candidate', data, broadcast=True)
+
+if __name__ == '__main__':
+    import eventlet
+    import eventlet.wsgi
+    from eventlet.green import ssl
+
+    # Carregar chave e certificado
+    ssl_options = {
+        'keyfile': 'server.key',
+        'certfile': 'server.crt'
+    }
+
+    # Configurar e iniciar o servidor usando eventlet com suporte a SSL
+    eventlet.wsgi.server(eventlet.wrap_ssl(eventlet.listen(('0.0.0.0', 5000)), **ssl_options), app)
+"""
+
+
+from flask import Flask, render_template
+from flask_socketio import SocketIO, emit
+
+app_server = Flask(__name__)
+app = SocketIO(app, async_mode='eventlet')  # Usar eventlet
+
+@app_server.route('/')
+def home():
+    return render_template('homepage.html')
+
+@app_server.route('/receiver')
+def receiver():
+    return render_template('receiver.html')
+
+@app.on('offer')
+def handle_offer(data):
+    emit('offer', data, broadcast=True)
+
+@app.on('answer')
+def handle_answer(data):
+    emit('answer', data, broadcast=True)
+
+@app.on('candidate')
 def handle_candidate(data):
     emit('candidate', data, broadcast=True)
 
