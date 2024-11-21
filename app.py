@@ -82,27 +82,28 @@ if __name__ == '__main__':
 
 from flask import Flask, render_template, jsonify
 from flask_socketio import SocketIO, emit
-from threading import Thread
+# from threading import Thread
 
 class SocketIOFlask: 
     def __init__(self, name): 
         self.app = Flask(name) 
         self.socketIO = SocketIO(self.app, async_mode='eventlet') 
-        self.jsonapp = "" 
-        self.server_thread = Thread(target=self.run, args=('0.0.0.0',)) 
-        self.server_thread_started = False 
+        # self.jsonapp = "" 
+        # self.server_thread = Thread(target=self.run, args=('0.0.0.0',)) 
+        # self.server_thread_started = False 
         
     def __call__(self, environ, start_response): 
-        self.jsonapp = str(environ) 
-        if not self.server_thread_started: 
-            self.server_thread.start() 
-            self.server_thread_started = True 
-            
-        return self.app.__call__(environ, start_response) 
+        # self.jsonapp = str(environ) 
+        # if not self.server_thread_started: 
+        #     self.server_thread.start() 
+        #     self.server_thread_started = True 
+        call_response = self.app.__call__(environ, start_response) 
+        print(call_response)
+        return call_response
     
-    def run(self, host, *a, **kw): 
-        print("RUN SOCKET") 
-        self.socketIO.run(self.app, host=host, *a, **kw)
+    # def run(self, host, *a, **kw): 
+    #     print("RUN SOCKET") 
+    #     self.socketIO.run(self.app, host=host, *a, **kw)
     
 app = SocketIOFlask(__name__)
 
