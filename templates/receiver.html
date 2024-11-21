@@ -147,6 +147,15 @@
         const socket = io(window.location.origin);
         let pc;
 
+        socket.on('connect', () => {
+            console.log("%c>>> I'm connected!", 'color: green')
+            socket.emit('join_connected', socket.id)
+        });
+
+        socket.on('other_connected', (id) => {
+            console.log(`%c# ${id} is connected!`, 'color: yellow')
+        });
+
         socket.on('disconnect', () => {
             if (pc) {
                 pc.close();
