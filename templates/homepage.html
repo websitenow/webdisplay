@@ -183,12 +183,12 @@
         let pc;
 
         socket.on('connect', () => {
-            console.log(">>> I'm connected!")
+            console.log("%c>>> I'm connected!", 'color: green')
             socket.emit('join_connected', socket.id)
         });
 
         socket.on('other_connected', (id) => {
-            console.log(`# ${id} is connected!`)
+            console.log(`%c# ${id} is connected!`, 'color: yellow')
         });
 
         socket.on('disconnect', () => {
