@@ -89,9 +89,13 @@ class SocketIOFlask:
         self.socketIO = SocketIO(self.app, async_mode='eventlet')
         
     def __call__(self, environ, start_response): 
+        print("__CALL__")
+        print("ENVIRON: ", environ)
+        print("START RESPONSE: ", start_response)
         return self.app.__call__(environ, start_response)
     
     def run(self, *a, **kw):
+        print("RUN SOCKET")
         self.socketIO.run(self.app, *a, **kw)
     
 app = SocketIOFlask(__name__)
