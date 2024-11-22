@@ -8,7 +8,7 @@ let peerConnection = new RTCPeerConnection({
     ]
 });
 
-let socket = io('http://localhost:5000')
+let socket = io('https://rendersocketio-xsk6.onrender.com')
 let localStream;
 let remoteStream;
 let offerSended = false;
