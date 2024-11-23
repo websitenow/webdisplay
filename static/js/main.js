@@ -454,7 +454,6 @@ let addAnswer = async (answer) => {
 };
 
 // Eventos de clique dos botões
-document.getElementById('start-stream').addEventListener('click', start);
-document.getElementById('create-offer').addEventListener('click', createOffer);
-document.getElementById('create-answer').addEventListener('click', createAnswer);
-document.getElementById('add-answer').addEventListener('click', addAnswer);
+document.getElementById('create-offer').addEventListener('click', createOffer)
+document.getElementById('create-answer').addEventListener('click', createAnswer)
+document.getElementById('add-answer').addEventListener('click', addAnswer)
