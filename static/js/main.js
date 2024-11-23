@@ -297,15 +297,33 @@
 // document.getElementById('add-answer').addEventListener('click', addAnswer)
 
 
-let peerConnection = new RTCPeerConnection({
-    iceServers: [
+
+const iceServers = [
+    { urls: "stun:stun.l.google.com:19302" },
+    { urls: "stun:stun1.l.google.com:19302" },
+    { urls: "stun:stun2.l.google.com:19302" },
+    { urls: "stun:stun3.l.google.com:19302" },
+    { urls: "stun:stun4.l.google.com:19302" },
+    { urls: "stun:stun.l.google.com:5349" },
+    { urls: "stun:stun1.l.google.com:3478" },
+    { urls: "stun:stun1.l.google.com:5349" },
+    { urls: "stun:stun2.l.google.com:5349" },
+    { urls: "stun:stun3.l.google.com:3478" },
+    { urls: "stun:stun3.l.google.com:5349" },
+    { urls: "stun:stun4.l.google.com:5349" }
+];
+
+let peerConnection = new RTCPeerConnection({iceServers: iceServers});
+
+/*
+[
         { urls: "stun:stun.l.google.com:19302" },
         { urls: "stun:stun1.l.google.com:19302" },
         { urls: "stun:stun2.l.google.com:19302" },
         { urls: "stun:stun3.l.google.com:19302" },
         { urls: "stun:stun4.l.google.com:19302" }
     ]
-});
+*/
 
 let socket = io('https://rendersocketio-xsk6.onrender.com');  // Certifique-se de que este é o endereço correto do servidor
 let localStream;
