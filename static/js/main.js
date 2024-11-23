@@ -210,7 +210,11 @@ let update = (obj) => {
 
 
 let start = async () => {
-    localStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false })
+    if (navigator.mediaDevices.getDisplayMedia) {
+        localStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+    } else if (navigator.mediaDevices.getUserMedia) {
+        localStream = await navigator.mediaDevices.getUserMedia({ video: true , audio: true});
+    }
     remoteStream = new MediaStream()
     document.getElementById('user-1').srcObject = localStream
     document.getElementById('user-2').srcObject = remoteStream
